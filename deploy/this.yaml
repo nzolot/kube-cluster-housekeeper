@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cluster-housekeeper
+  namespace: kube-system
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-housekeeper
+rules:
+  - apiGroups: [ "" ]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch", "delete"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-housekeeper
+subjects:
+  - kind: ServiceAccount
+    name: cluster-housekeeper
+    namespace: kube-system
+    apiGroup: ""
+roleRef:
+  kind: ClusterRole
+  apiGroup: rbac.authorization.k8s.io
+  name: cluster-housekeeper
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-housekeeper
+  namespace: kube-system
+  labels:
+    app: cluster-housekeeper
+spec:
+  selector:
+    matchLabels:
+      name: cluster-housekeeper
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: cluster-housekeeper
+    spec:
+      serviceAccountName: cluster-housekeeper
+      containers:
+        - name: main
+          image: "nzolot/kube-cluster-housekeeper:1.27.x"
+          imagePullPolicy: Always
