@@ -1,9 +1,9 @@
-##Description
+# Description
 This is a small project that cleans nodes from cluster that were decommissioned by Cluster Autoscaler (CA)
 
-##Installation
+# Installation
 ```kubectl apply -f deploy/```
 
-##Build
+# Build
 ```./build.sh ${DOCKER_HUB_REPO}```
 
